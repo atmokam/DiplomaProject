@@ -1,2 +1,1 @@
-# DiplomaWork
-Diploma Project
+# Diploma Project
