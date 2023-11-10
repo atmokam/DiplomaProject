@@ -34,7 +34,7 @@ class Parser:
         return output
 
     # noinspection PyMethodMayBeStatic
-    def replacer(self, regex, line, param):
+    def _replacer(self, regex, line, param):
         start = 0
         new_string = ''
         for match in re.finditer(regex, line):
@@ -44,6 +44,10 @@ class Parser:
         new_string += line[start:]
         return new_string
 
+    # noinspection PyMethodMayBeStatic
+    def _clamp(self, n, smallest, largest):
+        return max(smallest, min(n, largest))
+
     def modify_transistor_params(self, new_params:  dict[str, dict[str, str]]):
         # Read the original file
         with open(self.path, 'r') as f:
@@ -52,26 +56,17 @@ class Parser:
         for i, line in enumerate(lines):
 
             for key, values in new_params.items():
-                if self.w_tuple[0] >= float(values["w"]):
-                    values["w"] = str(self.w_tuple[0])
-                if self.w_tuple[1] <= float(values["w"]):
-                    values["w"] = str(self.w_tuple[1])
-                if self.nf_tuple[0] >= float(values["nf"]):
-                    values["nf"] = str(self.nf_tuple[0])
-                if self.nf_tuple[1] <= float(values["nf"]):
-                    values["nf"] = str(self.nf_tuple[1])
-                if self.l_tuple[0] >= float(values["l"]):
-                    values["l"] = str(self.l_tuple[0])
-                if self.l_tuple[1] <= float(values["l"]):
-                    values["l"] = str(self.l_tuple[1])
+                self._clamp(float(values["w"]), self.w_tuple[0], self.w_tuple[1])
+                self._clamp(float(values["nf"]), self.nf_tuple[0], self.nf_tuple[1])
+                self._clamp(float(values["l"]), self.l_tuple[0], self.l_tuple[1])
 
             if line.startswith("xm"):
                 name = line.split(' ', 1)[0]
                 if name not in new_params:
                     continue
-                line = self.replacer(r"w\s*?=\s*([\d.]+)", line, new_params[name]["w"])
-                line = self.replacer(r"nf\s*?=\s*([\d.]+)", line, new_params[name]["nf"])
-                line = self.replacer(r"l\s*?=\s*([\d.]+)", line, new_params[name]["l"])
+                line = self._replacer(r"w\s*?=\s*?([\d.]+)", line, new_params[name]["w"])
+                line = self._replacer(r"nf\s*?=\s*?([\d.]+)", line, new_params[name]["nf"])
+                line = self._replacer(r"l\s*?=\s*?([\d.]+)", line, new_params[name]["l"])
 
             lines[i] = line
 
