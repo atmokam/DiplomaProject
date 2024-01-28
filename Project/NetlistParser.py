@@ -9,6 +9,7 @@ class NetlistParser:
         self.w_tuple = w_tuple
         self.l_tuple = l_tuple
         self.nf_tuple = nf_tuple
+        self.parameters = {"w": w_tuple, "l": l_tuple, "nf": nf_tuple}
 
     def parse(self):
         with open(self.path, 'r') as f:
@@ -18,7 +19,7 @@ class NetlistParser:
         params = {}
         for line in lines:
             if line.startswith("x"):
-                for val in ["w", "l", "nf"]:
+                for val in self.parameters.keys():
                     name = line.split(' ', 1)[0]
                     output[name] = {}
 
@@ -51,17 +52,17 @@ class NetlistParser:
         return max(smallest, min(n, largest))
 
     def modify_transistor_params(self, new_params:  dict[str, dict[str, str]]):
+        # Read the original file
         with open(self.path, 'r') as f:
             lines = f.readlines()
 
         for key, values in new_params.items():
-            values["w"] = str(self._clamp(float(values["w"]), self.w_tuple[0], self.w_tuple[1]))
-            values["l"] = str(self._clamp(float(values["l"]), self.l_tuple[0], self.l_tuple[1]))
-            values["nf"] = str(self._clamp(float(values["nf"]), self.nf_tuple[0], self.nf_tuple[1]))
+            for param, p_tuple in self.parameters.items():
+                values[param] = str(self._clamp(float(values[param]), p_tuple[0], p_tuple[1]))
 
         for i, line in enumerate(lines):
             if line.startswith("x"):
-                for val in ["w", "l", "nf"]:
+                for val in self.parameters.keys():
                     name = line.split(' ', 1)[0]
                     if name not in new_params:
                         continue
