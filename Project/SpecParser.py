@@ -2,16 +2,13 @@ import re
 
 
 class SpecParser:
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, file):
+        self.file = file
 
-    def parse_specs(self):
-        with open(self.path, 'r') as f:
-            lines = f.readlines()
-
+    def parse(self):
         result = {}
         pattern = re.compile(r"^[\s]*([\w\-]+)\s+([\d\-]+)\s+([\d\-]+)\s+([\w\-]+)\s+([\w\-]+)\s+\{([\s\w\-]+)}")
-        for line in lines:
+        for line in self.file:
             match = pattern.search(line)
             if match:
                 param_name = match.group(1)
@@ -22,8 +19,8 @@ class SpecParser:
                 description = match.group(6)
 
                 result[param_name] = {}
-                result[param_name]["SpecLo"] = spec_lo
-                result[param_name]["SpecHi"] = spec_hi
+                result[param_name]["SpecLo"] = int(spec_lo)
+                result[param_name]["SpecHi"] = int(spec_hi)
                 result[param_name]["Scale"] = scale
                 result[param_name]["Unit"] = unit
                 result[param_name]["descr"] = description

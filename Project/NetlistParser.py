@@ -3,16 +3,13 @@ import re
 
 class NetlistParser:
    
-    def __init__(self, path, parameter_names: list[str]):
-        self.path = path
+    def __init__(self, file, parameter_names: list[str]):
         self.parameter_names = parameter_names
+        self.file = file
 
     def parse(self):
-        with open(self.path, 'r') as f:
-            lines = f.readlines()
-
         output = {}
-        for line in lines:
+        for line in self.file:
             params = {}
             for val in self.parameter_names:
                 pattern = re.compile(f"^(x\w+).*?({val})\\s*=\\s*([\\d.]+)")
@@ -21,7 +18,7 @@ class NetlistParser:
                     name = match.group(1)
                     key = match.group(2)
                     value = match.group(3)
-                    params[key] = value
+                    params[key] = float(value)
                     output[name] = params            
 
         return output
@@ -42,14 +39,12 @@ class NetlistParser:
         return max(smallest, min(n, largest))
 
     def modify_transistor_params(self, new_params:  dict[str, dict[str, str]], param_constraints, out: str):
-        with open(self.path, 'r') as f:
-            lines = f.readlines()
 
         for values in new_params.values():
             for param, p_tuple in param_constraints.items():
                 values[param] = str(self._clamp(float(values[param]), p_tuple[0], p_tuple[1]))
 
-        for i, line in enumerate(lines):
+        for i, line in enumerate(self.file):
             if line.startswith("x"):
                 for val in param_constraints.keys():
                     name = line.split(' ', 1)[0]
@@ -57,7 +52,7 @@ class NetlistParser:
                         continue
                     line = self._replacer(f"({val})\\s*=\\s*([\\d.]+)", line, new_params[name][val])
 
-                    lines[i] = line
+                    self.file[i] = line
 
         with open(out, 'w') as f:
-            f.writelines(lines)
+            f.writelines(self.file)

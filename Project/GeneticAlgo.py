@@ -1,11 +1,6 @@
 import random
 from typing import List, Tuple
-import NetlistParser
-
-class Individual:
-    def __init__(self, params: dict[str, str]):
-       pass
-
+from Individual import Individual
 
 
 class GeneticAlgo:    
@@ -14,14 +9,14 @@ class GeneticAlgo:
         return (measured_val - lower_bound) / (upper_bound - lower_bound) 
 
 
-    def generate_population(population_size, parameter_constraints) -> List[Individual]:
+    def generate_population(self, netlist, population_size, parameter_constraints) -> List[Individual]:
         population = []
+
         for _ in range(population_size):
-            param_dict = {}
-            for name in parameter_constraints.keys():
-                param_dict[f"{name}"] = random.uniform(parameter_constraints[name][0], parameter_constraints[name][1])
-            individual = Individual(param_dict)
-            population.append(individual)
+            for key in netlist.keys():
+                netlist[key] = {k: random.uniform(parameter_constraints[k][0], parameter_constraints[k][1]) 
+                                for k in parameter_constraints.keys()}
+            population.append(Individual(netlist.copy()))
 
         return population
 
@@ -31,31 +26,25 @@ class GeneticAlgo:
 
 
     def crossover(self, parent1, parent2) -> Individual:
-        # impl crossover
-        result = Individual() # change this
-        return result
+        pass
 
 
     def mutate(self, individual) -> Individual:
         pass
 
 
-    def genetic_algorithm(self, generations, population_size, generate_from, param_constraints):
+    def genetic_algorithm(self, netlist, spec, population_size, generations, param_constraints):
 
-        population = self.generate_population(population_size) 
+        population = self.generate_population(netlist, population_size, param_constraints) 
         # write to netlist
-        # wrong: population_dict = {f"xm{i}": population[i].params for i in range(len(population))}
-        # move these:
-        netlist_parser = NetlistParser("path", param_constraints.keys())
-        netlist_parser.modify_transistor_params()
+        
         # run hspice simulation -> measures file
         # parse measured values
         # calculate fitness on measured values
 
-        # for individual in population:
-        #     for key in individual.params.keys():
-        #         pass
-                #individual.fitness += self.fitness_function(key, param_constraints[key][0], param_constraints[key][1])
+        for individual in population:
+           pass
+                #individual.fitness += self.fitness_function(measured_val, spec[key][0], spec[key][1])
 
         for _ in range(generations):
             parent1, parent2 = self.select_parents(population) 
