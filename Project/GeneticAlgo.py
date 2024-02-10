@@ -9,13 +9,14 @@ class GeneticAlgo:
         return (measured_val - lower_bound) / (upper_bound - lower_bound) 
 
 
-    def generate_population(self, netlist, population_size, parameter_constraints) -> List[Individual]:
+    def generate_population(self, netlist, population_size, param_constraints) -> List[Individual]:
         population = []
-
+        generate_random = lambda key, num: random.randint(param_constraints[key][0], param_constraints[key][1]) if isinstance(num, int) \
+                                                          else random.uniform(param_constraints[key][0], param_constraints[key][1])
+        
         for _ in range(population_size):
             for key in netlist.keys():
-                netlist[key] = {k: random.uniform(parameter_constraints[k][0], parameter_constraints[k][1]) 
-                                for k in parameter_constraints.keys()}
+                netlist[key] = {k: generate_random(k, netlist[key][k]) for k in param_constraints.keys()}
             population.append(Individual(netlist.copy()))
 
         return population
@@ -36,13 +37,13 @@ class GeneticAlgo:
     def genetic_algorithm(self, netlist, spec, population_size, generations, param_constraints):
 
         population = self.generate_population(netlist, population_size, param_constraints) 
-        # write to netlist
-        
-        # run hspice simulation -> measures file
-        # parse measured values
-        # calculate fitness on measured values
 
         for individual in population:
+            # write to netlist
+            
+            # run hspice simulation -> measures file
+            # parse measured values
+            # calculate fitness on measured values
            pass
                 #individual.fitness += self.fitness_function(measured_val, spec[key][0], spec[key][1])
 

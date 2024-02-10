@@ -51,4 +51,4 @@ class Application:
         # return GeneticAlgo.genetic_algorithm(ntl_parsed, spec_parsed, population_size,
         #                                       generations, self._parameter_constraints)
     
-
+    

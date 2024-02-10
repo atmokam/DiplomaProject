@@ -18,7 +18,11 @@ class NetlistParser:
                     name = match.group(1)
                     key = match.group(2)
                     value = match.group(3)
-                    params[key] = float(value)
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        value = float(value)
+                    params[key] = value
                     output[name] = params            
 
         return output
