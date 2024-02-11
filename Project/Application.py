@@ -5,8 +5,9 @@ from SpecParser import SpecParser
 
 class Application:
     def __init__(self):
-        self._spec_file = ""
-        self._netlist_file = ""
+        self._spec_path = ""
+        self._netlist_path = ""
+        self._sim_folder = ""
         self._parameter_constraints = {"w": (0.2, 2.4), "l": (0.03, 0.03), "nf": (1, 10)}
 
     @property
@@ -19,36 +20,44 @@ class Application:
 
 
     @property
-    def netlist_file(self):
-        return self._netlist_file
+    def netlist_path(self):
+        return self._netlist_path
     
-    @netlist_file.setter
-    def netlist_file(self, path):
-        self._netlist_file = self.read_from_file(path)
+    @netlist_path.setter
+    def netlist_path(self, path):
+        self._netlist_path = path
 
 
     @property
-    def spec_file(self):
-        return self._spec_file
+    def spec_path(self):
+        return self._spec_path
     
-    @spec_file.setter
-    def spec_file(self, path):
-        self._spec_file = self.read_from_file(path)
+    @spec_path.setter
+    def spec_path(self, path):
+        self._spec_path = path
+
     
-    def read_from_file(self, file_path):
-        with open(file_path, 'r') as f:
-            return f.readlines()
+    @property
+    def sim_folder(self):
+        return self._sim_folder
+    
+    @sim_folder.setter
+    def sim_folder(self, path):
+        self._sim_folder = path
+    
+    
         
 
     def run_genetic_algo(self, population_size, generations):
 
-        spec = SpecParser(self._spec_file)
-        netlist = NetlistParser(self._netlist_file, self._parameter_constraints.keys())
+        spec_prs = SpecParser(self._spec_path)
+        netlist_prs = NetlistParser(self._netlist_path)
+        netlist_prs.parameter_names = self._parameter_constraints.keys()
 
-        spec_parsed = spec.parse()
-        ntl_parsed = netlist.parse()
-       
-        # return GeneticAlgo.genetic_algorithm(ntl_parsed, spec_parsed, population_size,
-        #                                       generations, self._parameter_constraints)
+        spec_parsed = spec_prs.parse()
+        ntl_parsed = netlist_prs.parse()
+
+        gen_algo = GeneticAlgo(self._sim_folder, self._spec_path, self._netlist_path)
+        return gen_algo.genetic_algorithm(ntl_parsed, spec_parsed, population_size, generations, self._parameter_constraints)
     
     

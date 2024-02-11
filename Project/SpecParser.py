@@ -2,13 +2,17 @@ import re
 
 
 class SpecParser:
-    def __init__(self, file):
-        self.file = file
+    def __init__(self, path):
+        self._file = self._read_file(path)
+
+    def _read_file(self, path):
+        with open(path, 'r') as f:
+            return f.readlines()
 
     def parse(self):
         result = {}
         pattern = re.compile(r"^[\s]*([\w\-]+)\s+([\d\-]+)\s+([\d\-]+)\s+([\w\-]+)\s+([\w\-]+)\s+\{([\s\w\-]+)}")
-        for line in self.file:
+        for line in self._file:
             match = pattern.search(line)
             if match:
                 param_name = match.group(1)
