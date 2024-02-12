@@ -7,4 +7,4 @@ if __name__ == "__main__":
     app.spec_path = "/home/atmokam/Desktop/DiplomaProject/DiplomaProject/specs_and_measures.txt"
     app.netlist_path = "/home/atmokam/Desktop/DiplomaProject/DiplomaProject/two_stage_opamp_ac_deck.txt"
 
-    app.run_genetic_algo(10, 10)
+    print(app.run_genetic_algo(100, 100))

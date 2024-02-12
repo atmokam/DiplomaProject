@@ -58,6 +58,6 @@ class Application:
         ntl_parsed = netlist_prs.parse()
 
         gen_algo = GeneticAlgo(self._sim_folder, self._spec_path, self._netlist_path)
-        return gen_algo.genetic_algorithm(ntl_parsed, spec_parsed, population_size, generations, self._parameter_constraints)
+        return gen_algo.genetic_algorithm(ntl_parsed, spec_parsed, population_size, generations, self._parameter_constraints, 0.6)
     
     
