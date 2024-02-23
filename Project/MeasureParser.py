@@ -5,10 +5,6 @@ class MeasureParser:
     def __init__(self, path):
         self._measure_file = self._read_file(path)
     
-    
-    @property
-    def file(self):
-        return self._measure_file
 
     def _read_file(self, path):
         with open(path, 'r') as f:

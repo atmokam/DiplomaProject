@@ -4,39 +4,16 @@ from SpecParser import SpecParser
 
 
 class Application:
-    def __init__(self):
-        self._spec_path = ""
-        self._netlist_path = ""
-        self._sim_folder = ""
-        self._parameter_constraints = {"w": (0.2, 2.4), "l": (0.03, 0.03), "nf": (1, 10)}
 
-    @property
-    def parameter_constraints(self):
-        return self._parameter_constraints
-    
-    @parameter_constraints.setter
-    def parameter_constraints(self, value):
-        self._parameter_constraints = value
+    def run_genetic_algo(self, population_size, generations):
+        self._netlist.parameter_names = self._parameter_constraints.keys()
+        gen_algo = GeneticAlgo(self._sim_folder, self._scales)
+        return gen_algo.genetic_algorithm( self._netlist.parse(), self._spec.parse(), \
+                                           population_size, generations, self._parameter_constraints, 0.6)
+ 
 
+    # Getters and setters
 
-    @property
-    def netlist_path(self):
-        return self._netlist_path
-    
-    @netlist_path.setter
-    def netlist_path(self, path):
-        self._netlist_path = path
-
-
-    @property
-    def spec_path(self):
-        return self._spec_path
-    
-    @spec_path.setter
-    def spec_path(self, path):
-        self._spec_path = path
-
-    
     @property
     def sim_folder(self):
         return self._sim_folder
@@ -44,20 +21,38 @@ class Application:
     @sim_folder.setter
     def sim_folder(self, path):
         self._sim_folder = path
+
+
+    @property
+    def parameter_constraints(self):
+        return self._parameter_constraints
     
+    @parameter_constraints.setter
+    def parameter_constraints(self, constraints):
+        self._parameter_constraints = constraints
+
+    @property
+    def scales(self):
+        return self._scales
     
-        
+    @scales.setter
+    def scales(self, scales):
+        self._scales = scales
 
-    def run_genetic_algo(self, population_size, generations):
-
-        spec_prs = SpecParser(self._spec_path)
-        netlist_prs = NetlistParser(self._netlist_path)
-        netlist_prs.parameter_names = self._parameter_constraints.keys()
-
-        spec_parsed = spec_prs.parse()
-        ntl_parsed = netlist_prs.parse()
-
-        gen_algo = GeneticAlgo(self._sim_folder, self._spec_path, self._netlist_path)
-        return gen_algo.genetic_algorithm(ntl_parsed, spec_parsed, population_size, generations, self._parameter_constraints, 0.6)
+    @property
+    def netlist(self):
+        return self._netlist
     
+    @netlist.setter
+    def netlist(self, netlist_path):
+        self._netlist = NetlistParser(netlist_path)
+
+    @property
+    def spec(self):
+        return self._spec
+    
+    @spec.setter
+    def spec(self, spec_path):
+        self._spec = SpecParser(spec_path)
+
     

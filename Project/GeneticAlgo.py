@@ -6,12 +6,9 @@ from MeasureParser import MeasureParser
 
 
 class GeneticAlgo: 
-    def __init__(self, path_to_sim_folder, spec_path, netlist_path):
+    def __init__(self, path_to_sim_folder, scales):
         self._path_to_sim_folder = path_to_sim_folder
-        self._spec_path = spec_path
-        self._netlist_path = netlist_path
-        self._scale = {"pic": 10**-12, "pico": 10**-12, "nan": 10**-9, "nano": 10**-9, "0": 1, "kil": 10**3 , "kilo": 10**3, "meg": 10**6, "mega":  10**6}
-
+        self._scales = scales
 
     def _write_netlist(self, individual, param_constraints, out):
         ntl_parser = NetlistParser(self._netlist_path)
@@ -28,7 +25,7 @@ class GeneticAlgo:
             low = spec.get(key, {}).get("SpecLo")
             high = spec.get(key, {}).get("SpecHi")
             if low and high:
-                individual.fitness += self._fitness_function(meas_val, low * self._scale[spec[key]["Scale"]], high * self._scale[spec[key]["Scale"]])
+                individual.fitness += self._fitness_function(meas_val, low * self._scales[spec[key]["Scale"]], high * self._scales[spec[key]["Scale"]])
 
 
     def _fitness_function(self, measured_val, lower_bound, upper_bound):
@@ -73,6 +70,7 @@ class GeneticAlgo:
             individual[key1], individual[key2] = individual[key2], individual[key1]
         return individual
 
+    def _simulate_deck()
 
 
     def genetic_algorithm(self, netlist, spec, population_size, generations, param_constraints, mutation_rate):
