@@ -1,3 +1,4 @@
+import os
 from GeneticAlgo import GeneticAlgo
 from NetlistParser import NetlistParser
 from SpecParser import SpecParser
@@ -6,11 +7,17 @@ from SpecParser import SpecParser
 class Application:
 
     def run_genetic_algo(self, population_size, generations):
-        self._netlist.parameter_names = self._parameter_constraints.keys()
-        gen_algo = GeneticAlgo(self._sim_folder, self._scales)
-        return gen_algo.genetic_algorithm( self._netlist.parse(), self._spec.parse(), \
-                                           population_size, generations, self._parameter_constraints, 0.6)
+        gen_algo = GeneticAlgo(self._sim_folder, self._scales, self._netlist, self._spec, self._parameter_constraints)
+        return gen_algo.genetic_algorithm(population_size, generations, 0.6)
  
+
+    def run(self):
+        path = os.path.join(self._sim_folder, "results.txt")
+        with open(path, "a") as f:
+            result = self.run_genetic_algo(100, 100)
+            f.write(str(result) + "\n\n")
+            
+
 
     # Getters and setters
 
@@ -44,15 +51,15 @@ class Application:
         return self._netlist
     
     @netlist.setter
-    def netlist(self, netlist_path):
-        self._netlist = NetlistParser(netlist_path)
+    def netlist(self, path):
+        self._netlist = path
 
     @property
     def spec(self):
         return self._spec
     
     @spec.setter
-    def spec(self, spec_path):
-        self._spec = SpecParser(spec_path)
+    def spec(self, path):
+        self._spec = path
 
     

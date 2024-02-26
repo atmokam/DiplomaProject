@@ -3,8 +3,8 @@ import re
 
 class NetlistParser:
     def __init__(self, path, names = []):
-        self._parameter_names = names
         self._file = self._read_file(path)
+        self._parameter_names = names
    
     @property
     def parameter_names(self):
@@ -25,7 +25,7 @@ class NetlistParser:
         for line in self._file:
             params = {}
             for val in self.parameter_names:
-                pattern = re.compile(f"^(x\w+).*?({val})\\s*=\\s*([\\d.]+)")
+                pattern = re.compile(f"^(x\\w+).*?({val})\\s*=\\s*([\\d.]+)")
                 match = pattern.search(line)
                 if match:
                     name = match.group(1)

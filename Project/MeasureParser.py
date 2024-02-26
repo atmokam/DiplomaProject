@@ -30,6 +30,7 @@ class MeasureParser:
         for line in self._measure_file[ind:]:
             val_list += line.split()
 
+
         output = {}
         for arg, val in zip(param_list, val_list):
             output[arg] = float(val)
