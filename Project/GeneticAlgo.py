@@ -1,5 +1,7 @@
 import random
 import os
+import csv
+from CsvWriter import CsvWriter
 from typing import List, Tuple
 from Individual import Individual
 from NetlistModifier import NetlistModifier
@@ -14,13 +16,15 @@ class GeneticAlgo:
         self._path_to_sim_folder = path_to_sim_folder
         self._scales = scales
         self._ntl_path = netlist
-        ntl = NetlistParser(netlist, parameter_constraints.keys()) # dict
-        self._netlist = ntl.parse()
+        self._netlist = NetlistParser(netlist, parameter_constraints.keys()).parse() # dict
         self._spec_path = spec
-        sp = SpecParser(spec) # dict
-        self._spec = sp.parse()
+        self._spec = SpecParser(spec).parse() # dict
         self._parameter_constraints = parameter_constraints
         self._sim = Simulator(self._path_to_sim_folder)
+
+        self._csv_file = os.path.join(self._path_to_sim_folder, "output.csv")
+        self._script_path = os.path.join(self._path_to_sim_folder, "run_sim.sh")
+        self._deck_file = os.path.join(self._path_to_sim_folder, "deck_file.sp")
 
 
 
@@ -61,7 +65,7 @@ class GeneticAlgo:
         rand_inds = random.sample(population, 3)
         rand_inds = sorted(rand_inds, key=lambda x: x.fitness)
         p1, p2 = rand_inds[0], rand_inds[1]
-        population.remove(rand_inds[1])
+        #population.remove(rand_inds[1])
         return (p1, p2)
 
 
@@ -85,34 +89,31 @@ class GeneticAlgo:
 
     def _get_measures(self, individual, out_file):
         self._write_netlist(individual, out_file)
-        script_path = os.path.join(self._path_to_sim_folder, "run_sim.sh")
-        meas_file_path = self._sim.run_script(script_path)
-        meas_ps = MeasureParser(meas_file_path)
-        return meas_ps.parse()
-
+        meas_file_path = self._sim.run_script(self._script_path)
+        return MeasureParser(meas_file_path).parse()
 
 
 
     def genetic_algorithm(self, population_size, generations, mutation_rate):
 
-        population = self._generate_population(self._netlist, population_size) 
-        deck_file = self._path_to_sim_folder + "deck.sp"
-
+        population = self._generate_population(self._netlist, population_size)
+        writer = CsvWriter(self._csv_file, population[0])
+        
         for individual in population:
-            measured_vals = self._get_measures(individual, deck_file)
+            measured_vals = self._get_measures(individual, self._deck_file)
             self._calculate_fintess(individual, measured_vals)
+            writer.write_csv(individual)
            
-            
         for _ in range(generations):
             parent1, parent2 = self._select_parents(population) 
             child = self._crossover(parent1.netlist.copy(), parent2.netlist.copy())
             child = Individual(self._mutate(child, mutation_rate))
 
-            measured_vals = self._get_measures(child, deck_file)
+            measured_vals = self._get_measures(child, self._deck_file)
             self._calculate_fintess(child, measured_vals)
-        
-            population.append(child)
+            writer.write_csv(child)
 
+            population.append(child)
 
         population = sorted(population, key=lambda x: x.fitness, reverse=True)
 

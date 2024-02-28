@@ -1,7 +1,6 @@
 import os
+import pickle
 from GeneticAlgo import GeneticAlgo
-from NetlistParser import NetlistParser
-from SpecParser import SpecParser
 
 
 class Application:
@@ -12,10 +11,11 @@ class Application:
  
 
     def run(self):
-        path = os.path.join(self._sim_folder, "results.txt")
-        with open(path, "a") as f:
-            result = self.run_genetic_algo(100, 100)
-            f.write(str(result) + "\n\n")
+        path = os.path.join(self._sim_folder, "result.pkl")
+        with open(path, 'wb') as f:
+            result = self.run_genetic_algo(200, 3800)
+            pickle.dump(result, f)
+            
             
 
 

@@ -1,7 +1,10 @@
 import Application
+import csv
 
 
 if __name__ == "__main__":
+    
+    
     app = Application.Application()
     app.sim_folder = "/home/atmokam/Desktop/DiplomaProject/DiplomaProject/sim/"
     app.spec = "/home/atmokam/Desktop/DiplomaProject/DiplomaProject/spec.txt"
