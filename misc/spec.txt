@@ -1,0 +1,5 @@
+#ParamName SpecLo SpecHi Scale Unit { description }
+gain_dc 35 90 0 dB { }
+phase_margin 30 90 0 deg { }
+gain_margin -50 -10 0 dB { }
+gain_bandwidth 350 550 meg Hz { }

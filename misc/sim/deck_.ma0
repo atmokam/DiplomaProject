@@ -1,0 +1,8 @@
+# ==== Measures ====
+
+$DATA1 SOURCE='PrimeSim HSPICE' VERSION='S-2021.09-SP2-2 linux64' PARAM_COUNT=0
+.TITLE '*custom compiler version s-2021.09-3'
+ gain_dc          phase_margin     gain_margin      gain_bandwidth  
+ temper           alter#          
+   49.5365          64.1284         -22.6427         4.737e+08      
+   25.0000        1               
