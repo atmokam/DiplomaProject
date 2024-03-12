@@ -30,7 +30,7 @@ class NetlistModifier:
                 values[param] = self._clamp(values[param], p_tuple[0], p_tuple[1])
 
 
-    def modify_transistor_params(self, new_params, out, constraints = None):
+    def modify_transistor_params(self, new_params:  dict[str, dict[str, str]], out: str, constraints = None):
         
         if constraints:
             self._constrain(new_params, constraints)

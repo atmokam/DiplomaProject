@@ -39,4 +39,3 @@ class NetlistParser:
                     output[name] = params            
 
         return output
-

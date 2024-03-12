@@ -13,9 +13,9 @@ class Application:
     def run(self):
         path = os.path.join(self._sim_folder, "result.pkl")
         with open(path, 'wb') as f:
-            result = self.run_genetic_algo(200, 30)
+            result = self.run_genetic_algo(200, 3800)
             pickle.dump(result, f)
-            print(result)
+            
             
 
 
