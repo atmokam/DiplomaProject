@@ -1,9 +1,4 @@
-import Application
-import csv
-
-
-
-    
+   
     
     # app = Application.Application()
     # app.sim_folder = "/remote/home/stud1878/Desktop/DiplomaProject/sim/"
