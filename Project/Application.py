@@ -22,6 +22,23 @@ class Application:
     # Getters and setters
 
     @property
+    def generations(self):
+        return self._generations
+    
+    @generations.setter
+    def generations(self, generations):
+        self._generations = generations
+        print(self._generations)
+
+    @property
+    def population(self):
+        return self._population
+    
+    @population.setter
+    def population(self, population):
+        self._population = population
+
+    @property
     def sim_folder(self):
         return self._sim_folder
     
