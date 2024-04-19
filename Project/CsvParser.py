@@ -24,12 +24,13 @@ class CsvParser:
 
                 self.ntl_list.append(netlist)
 
-                fitness = float(row[fitness_index])
+                fitness = float(row[3*fitness_index])
                 self.fitnesses.append(float(fitness))
 
                 measures = {}
-                for i in range(3*fitness_index+1, len(row)):
-                    measures[headers[int(i/3)]] = float(row[i])
+                
+                for i in range((3*fitness_index), len(row)):
+                    measures[headers[(i//3)+1]] = float(row[i-1])
 
                 measures[headers[-1]] = float(row[-1])
 

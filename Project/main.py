@@ -1,15 +1,22 @@
 from QtWindow import MainWindow
 from Application import Application
 
+from CsvParser import CsvParser
+
 if __name__ == "__main__":
-    from PyQt5.QtWidgets import QApplication
-    import sys
+    parser = CsvParser("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/sim/output.csv")
 
-    app = QApplication(sys.argv)
+    ntl_list, fitnesses, measures_data = parser.parse()
 
-    application = Application()
+    print(ntl_list, fitnesses, measures_data)
+    # from PyQt5.QtWidgets import QApplication
+    # import sys
 
-    mainWindow = MainWindow(application)
-    mainWindow.show()
+    # app = QApplication(sys.argv)
 
-    sys.exit(app.exec_())
+    # application = Application()
+
+    # mainWindow = MainWindow(application)
+    # mainWindow.show()
+
+    # sys.exit(app.exec_())
