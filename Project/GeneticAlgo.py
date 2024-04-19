@@ -120,7 +120,7 @@ class GeneticAlgo:
         return MeasureParser(meas_file_path).parse()
 
 
-    def _initialize_fitnesses(self, population, best_fitness=float('-inf'), best_individual=None):
+    def _initialize_individuals(self, population, best_fitness=float('-inf'), best_individual=None):
 
         for individual in population:
             individual.measures = self._get_measures(individual, self._deck_file)
@@ -138,7 +138,7 @@ class GeneticAlgo:
         
         writer = CsvWriter(self._csv_file)
 
-        best_fitness, best_individual = self._initialize_fitnesses(population)
+        best_fitness, best_individual = self._initialize_individuals(population)
 
         for _ in range(generations):
             for _ in range(population_size):
@@ -146,7 +146,7 @@ class GeneticAlgo:
                 child = self._crossover(parent1.copy(), parent2.copy())
                 child = self._mutate(child, mutation_rate)
 
-                best_fitness, best_individual = self._initialize_fitnesses(child, best_fitness, best_individual)
+                best_fitness, best_individual = self._initialize_individuals(child, best_fitness, best_individual)
                 population.extend(child)
 
 
