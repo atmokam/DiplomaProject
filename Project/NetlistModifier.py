@@ -30,11 +30,10 @@ class NetlistModifier:
                 values[param] = self._clamp(values[param], p_tuple[0], p_tuple[1])
 
 
-    def modify_transistor_params(self, new_params, out, constraints = None):
-        
-        if constraints:
-            self._constrain(new_params, constraints)
-            parameter_names = constraints.keys()
+    def modify_transistor_params(self, new_params, out, constraints):
+    
+        self._constrain(new_params, constraints)
+        parameter_names = constraints.keys()
 
         for i, line in enumerate(self._file):
             if line.startswith("x"):

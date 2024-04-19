@@ -1,4 +1,4 @@
-import random, os
+import random, os, copy
 from CsvWriter import CsvWriter
 from typing import List
 from Individual import Individual
@@ -7,6 +7,7 @@ from MeasureParser import MeasureParser
 from NetlistParser import NetlistParser
 from SpecParser import SpecParser
 from Simulator import Simulator
+
 
 class GeneticAlgo:
 
@@ -17,6 +18,7 @@ class GeneticAlgo:
         self._netlist = NetlistParser(netlist, parameter_constraints.keys()).parse()
         self._spec_path = spec
         self._spec = SpecParser(spec).parse()
+
         self._parameter_constraints = parameter_constraints
         self._sim = Simulator(self._path_to_sim_folder)
 
@@ -41,76 +43,114 @@ class GeneticAlgo:
             low = self._spec.get(key, {}).get('SpecLo')
             high = self._spec.get(key, {}).get('SpecHi')
 
-            print('\n', 'measure at key ', key, ' = ', meas_val)
-            print('spec low: ', low, 'high: ', high)
-
             if low and high:
-                scale = self._spec[key]['Scale']
+                spec_key = self._spec.get(key, {}).get('Scale')
+                scale = self._scales.get(spec_key)
+                
                 fitness += self._fitness_function(meas_val, low * scale, high * scale)
-                print(self._scales[self._spec[key]['Scale']])
 
         return fitness
 
+
     def _fitness_function(self, measured_val, lower_bound, upper_bound):
-        return (measured_val - lower_bound) / (upper_bound - lower_bound)
+        if lower_bound <= measured_val <= upper_bound:
+            return 1
+        else:
+            mid = (lower_bound + upper_bound) / 2
+            return -abs(measured_val - mid) / mid
 
     def _generate_population(self, netlist, population_size) -> List[Individual]:
         population = []
         for _ in range(population_size):
+            new_net = netlist.copy()
             for key in netlist.keys():
-                netlist[key] = {param: self._generate_num(netlist[key][param], 
-                                                          self._parameter_constraints[param][0], 
-                                                          self._parameter_constraints[param][1]) 
+                new_net[key] = {param: self._generate_num(new_net[key][param], 
+                                                          self._parameter_constraints[param][0], self._parameter_constraints[param][1]) 
                                                           for param in self._parameter_constraints.keys()}
 
-            population.append(Individual(netlist.copy()))
+            population.append(Individual(new_net.copy()))
 
         return population
 
-    def _select_parents(self, population):
-        rand_inds = random.sample(population, 3)
-        rand_inds = sorted(rand_inds, key=(lambda x: x.fitness))
-        p1, p2 = rand_inds[0], rand_inds[1]
-        population.remove(rand_inds[1])
-        return (p1, p2)
+    def _select_parents(self, population, size):
+        if len(population) > size: # tournament select
+            sample_length = random.randint(size, len(population))
+            p1 = random.sample(population, sample_length)
+            p2 = random.sample(population, sample_length)
+        
+            p1.sort(key=(lambda x: x.fitness), reverse=True)
+            p2.sort(key=(lambda x: x.fitness), reverse=True)
+            result1 = p1[:size]
+            result2 = p1[:size]
 
-    def _crossover(self, parent1, parent2) -> Individual:
-        size = len(parent1) - random.randint(1, len(parent1) - 1)
-        rand_pop = random.sample(list(parent1.keys()), size)
-        for key in rand_pop:
-            parent1[key] = parent2[key]
+            random.shuffle(result1)
+            random.shuffle(result2)
+        else:
+            result1 = random.sample(population, size)
+            result2 = random.sample(population, size)
+        return (result1, result2)
 
-        return parent1
+    def _crossover(self, parent_pop1, parent_pop2):
+        result = []
+        for par1, par2 in zip(parent_pop1, parent_pop2):
+            net1, net2 = par1.netlist.copy(), par2.netlist.copy()
+            size = random.randint(1, len(net1) - 1)
+            rand_pop = random.sample(list(net1.keys()), size)
+            for key in rand_pop:
+                net1[key] = net2[key]
 
-    def _mutate(self, individual, rate) -> Individual:
-        rand = random.random()
-        if rand < rate:
-            key1, key2 = random.sample(individual.keys(), 2)
-            individual[key1], individual[key2] = individual[key2], individual[key1]
-        return individual
+            par1.netlist = net1
+            result.append(par1)
+        return result
+
+    def _mutate(self, pop, rate):
+        for individual in pop:
+            rand = random.random()
+            if rand < rate:
+                key = random.sample(individual.netlist.keys(), 1)
+                param = random.sample(individual.netlist[key[0]].keys(), 1)[0]
+                individual.netlist[key] = {param: self._generate_num(individual.netlist[key][param],
+                                                                        self._parameter_constraints[param][0], self._parameter_constraints[param][1])}
+
+        return pop
 
     def _get_measures(self, individual, out_file):
         self._write_netlist(individual, out_file)
         meas_file_path = self._sim.run_script(self._script_path)
         return MeasureParser(meas_file_path).parse()
 
-    def genetic_algorithm(self, population_size, generations, mutation_rate):
-        population = self._generate_population(self._netlist, population_size)
-        writer = CsvWriter(self._csv_file, population[0])
-        
+
+    def _initialize_fitnesses(self, population, best_fitness=float('-inf'), best_individual=None):
+
         for individual in population:
-            measured_vals = self._get_measures(individual, self._deck_file)
-            individual.fitness = self._calculate_fintess(measured_vals)
-            writer.write_csv(individual)
+            individual.measures = self._get_measures(individual, self._deck_file)
+            individual.fitness = self._calculate_fintess(individual.measures)
+
+            if individual.fitness > best_fitness:
+                best_fitness = individual.fitness
+                best_individual = individual
+
+        return best_fitness, best_individual
+
+
+    def genetic_algorithm(self, population_size, generations, mutation_rate):
+        population = self._generate_population(self._netlist.copy(), population_size)
+        
+        writer = CsvWriter(self._csv_file)
+
+        best_fitness, best_individual = self._initialize_fitnesses(population)
 
         for _ in range(generations):
-            parent1, parent2 = self._select_parents(population)
-            child = self._crossover(parent1.netlist.copy(), parent2.netlist.copy())
-            child = Individual(self._mutate(child, mutation_rate))
-            measured_vals = self._get_measures(child, self._deck_file)
-            child.fitness = self._calculate_fintess(measured_vals)
-            writer.write_csv(child)
-            population.append(child)
+            for _ in range(population_size):
+                parent1, parent2 = self._select_parents(population, population_size)
+                child = self._crossover(parent1.copy(), parent2.copy())
+                child = self._mutate(child, mutation_rate)
 
-        population = sorted(population, key=(lambda x: x.fitness), reverse=True)
-        return population[0].netlist
+                best_fitness, best_individual = self._initialize_fitnesses(child, best_fitness, best_individual)
+                population.extend(child)
+
+
+        writer.write([ind.netlist for ind in population], [ind.fitness for ind in population], [ind.measures for ind in population])
+
+        print(best_fitness)
+        return best_individual.netlist

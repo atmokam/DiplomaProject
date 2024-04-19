@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         self.param_constraints.setPlaceholderText("Parameter constraints")
         self.param_constraints.editingFinished.connect(lambda: self.application_ref.parameter_constraints(self.param_constraints.text()))
 
-        self.buttonRun = QPushButton("Run Simulation")
+        self.buttonRun = QPushButton("Generate")
         self.buttonRun.clicked.connect(self.runFunction)
 
         layout = QVBoxLayout()
