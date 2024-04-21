@@ -1,4 +1,4 @@
-import random, os, copy
+import random, os
 from CsvWriter import CsvWriter
 from typing import List
 from Individual import Individual
