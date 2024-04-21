@@ -12,14 +12,14 @@ class Application:
 
     def run(self):
         path = os.path.join(self._sim_folder, "result.pkl")
+        result = self.run_genetic_algo(20, 10)
         with open(path, 'wb') as f:
-            result = self.run_genetic_algo(200, 30)
             pickle.dump(result, f)
-            print(result)
+        print(result)
             
 
 
-    # Getters and setters
+    # getters and setters
 
     @property
     def generations(self):
@@ -37,6 +37,7 @@ class Application:
     @population.setter
     def population(self, population):
         self._population = population
+        print(self._population)
 
     @property
     def sim_folder(self):

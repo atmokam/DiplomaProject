@@ -12,14 +12,15 @@ from Simulator import Simulator
 class GeneticAlgo:
 
     def __init__(self, path_to_sim_folder, scales, netlist, spec, parameter_constraints):
-        self._path_to_sim_folder = path_to_sim_folder
         self._scales = scales
-        self._ntl_path = netlist
+        self._parameter_constraints = parameter_constraints
         self._netlist = NetlistParser(netlist, parameter_constraints.keys()).parse()
+        
+        self._ntl_path = netlist
         self._spec_path = spec
         self._spec = SpecParser(spec).parse()
 
-        self._parameter_constraints = parameter_constraints
+        self._path_to_sim_folder = path_to_sim_folder
         self._sim = Simulator(self._path_to_sim_folder)
 
         self._csv_file = os.path.join(self._path_to_sim_folder, 'output.csv')
@@ -134,8 +135,6 @@ class GeneticAlgo:
 
     def genetic_algorithm(self, population_size, generations, mutation_rate):
         population = self._generate_population(self._netlist.copy(), population_size)
-        
-        writer = CsvWriter(self._csv_file)
 
         best_fitness, best_individual = self._initialize_individuals(population)
 
@@ -149,7 +148,11 @@ class GeneticAlgo:
                 population.extend(child)
 
 
-        writer.write([ind.netlist for ind in population], [ind.fitness for ind in population], [ind.measures for ind in population])
+
+        writer = CsvWriter(self._csv_file)
+        writer.write([ind.netlist for ind in population], 
+                     [ind.fitness for ind in population], 
+                     [ind.measures for ind in population])
 
         print(best_fitness)
         return best_individual.netlist
