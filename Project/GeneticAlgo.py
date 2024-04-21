@@ -88,7 +88,7 @@ class GeneticAlgo:
         else:
             result1 = random.sample(population, size)
             result2 = random.sample(population, size)
-        return (result1, result2)
+        return result1, result2
 
     def _crossover(self, parent_pop1, parent_pop2):
         result = []
@@ -121,7 +121,6 @@ class GeneticAlgo:
 
 
     def _initialize_individuals(self, population, best_fitness=float('-inf'), best_individual=None):
-
         for individual in population:
             individual.measures = self._get_measures(individual, self._deck_file)
             individual.fitness = self._calculate_fintess(individual.measures)
