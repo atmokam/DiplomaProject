@@ -15,9 +15,9 @@ class Model:
         self._model = k.models.load_model(path)
     
     @staticmethod
-    def ntl_list_to_list(ntl: list[dict[str, dict]]):
+    def ntl_list_to_list(ntl_list):
         result = []
-        for netlist in ntl:
+        for netlist in ntl_list:
             sample = []
             for params in netlist.values():
                 row = []
@@ -28,7 +28,7 @@ class Model:
         return result
     
     @staticmethod
-    def ntl_to_list(ntl: dict[str, dict]):
+    def ntl_to_list(ntl):
         sample = []
         for params in ntl.values():
             row = []
