@@ -1,45 +1,7 @@
-from PyQt5.QtWidgets import QLabel, QFileDialog, QLineEdit, QPushButton, QTextEdit, QVBoxLayout, QHBoxLayout, QWidget, QMainWindow
-from PyQt5.QtWidgets import QSizePolicy
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QLineEdit
+from ResultWindow import ResultWindow
+from ConstaintsParser import ConstaintsParser
 
-class MPLWidget(QWidget):
-    def __init__(self, parent=None):
-        super(MPLWidget, self).__init__(parent)
-
-        self.figure = Figure(figsize=(2, 2))
-        self.canvas = FigureCanvas(self.figure)
-        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.canvas)
-        self.setLayout(layout)
-
-    def plot(self, data):
-        ax = self.figure.add_subplot(111)
-        ax.plot(data)
-        self.canvas.draw()
-
-class ResultWindow(QMainWindow):
-    def __init__(self, result, data):
-        super().__init__()
-        self.setWindowTitle("Result Window")
-
-        self.textEdit = QTextEdit()
-        self.textEdit.setText(result)
-        self.textEdit.setFixedSize(500, 500)
-
-        self.graph = MPLWidget()
-        self.graph.setFixedSize(500, 500)
-        self.graph.plot(data)
-
-        layout = QHBoxLayout()
-        layout.addWidget(self.textEdit)
-        layout.addWidget(self.graph)
-
-        widget = QWidget()
-        widget.setLayout(layout)
-        self.setCentralWidget(widget)
 
 class MainWindow(QMainWindow):
     def __init__(self, application_ref):
@@ -66,7 +28,8 @@ class MainWindow(QMainWindow):
 
         self.param_constraints = QLineEdit()
         self.param_constraints.setPlaceholderText("Parameter constraints")
-        self.param_constraints.editingFinished.connect(lambda: self.application_ref.parameter_constraints(self.param_constraints.text()))
+        parser = ConstaintsParser()
+        self.param_constraints.editingFinished.connect(lambda: setattr(self.application_ref, 'parameter_constraints', parser.parse(self.param_constraints.text())))
 
         self.buttonRun = QPushButton("Generate")
         self.buttonRun.clicked.connect(self.runFunction)

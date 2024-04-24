@@ -28,7 +28,6 @@ class Application:
     @generations.setter
     def generations(self, generations):
         self._generations = generations
-        print(self._generations)
 
     @property
     def population(self):
@@ -37,7 +36,6 @@ class Application:
     @population.setter
     def population(self, population):
         self._population = population
-        print(self._population)
 
     @property
     def sim_folder(self):
