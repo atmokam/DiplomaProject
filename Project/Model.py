@@ -7,13 +7,13 @@ class Model:
 
     def predict(self, ntl):
         ntl = Model.ntl_to_list(ntl)
-        print(ntl)
         ntl = np.asarray(ntl).astype(np.float32)
         return self._model.predict(ntl)
     
     def load(self, path):
         self._model = k.models.load_model(path)
     
+    # bad, will change it later
     @staticmethod
     def ntl_list_to_list(ntl_list):
         result = []
@@ -27,6 +27,7 @@ class Model:
             result.append(sample.copy())
         return result
     
+    # same here
     @staticmethod
     def ntl_to_list(ntl):
         sample = []

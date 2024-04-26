@@ -15,16 +15,8 @@ class Simulator:
             raise Exception("no file found with .m*")
         original_file_path = files[0] 
 
-    
         return original_file_path
     
-
-    #  I probably don't need this part anywhere
-        # original_prefix = os.path.splitext(os.path.basename(original_file_path))[1]
-
-        # timestamp = time.strftime("%Y%m%d-%H%M%S")
-        # unique_filename = "{}{}".format(timestamp, original_prefix)
-
-        # unique_file_path = os.path.join(self.path, unique_filename)
-
-        # os.rename(original_file_path, unique_file_path)
+    def run_model(self, model, ntl):
+        return model.predict(ntl)
+    

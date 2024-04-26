@@ -7,6 +7,7 @@ from MeasureParser import MeasureParser
 from NetlistParser import NetlistParser
 from SpecParser import SpecParser
 from Simulator import Simulator
+from Model import Model
 
 
 class GeneticAlgo:
@@ -22,6 +23,8 @@ class GeneticAlgo:
 
         self._path_to_sim_folder = path_to_sim_folder
         self._sim = Simulator(self._path_to_sim_folder)
+
+        self._model = Model() # I have two_stage_opamp model for now
 
         self._csv_file = os.path.join(self._path_to_sim_folder, 'output.csv')
         self._script_path = os.path.join(self._path_to_sim_folder, 'run_sim.sh')
@@ -117,7 +120,8 @@ class GeneticAlgo:
 
     def _get_measures(self, individual, out_file):
         self._write_netlist(individual, out_file)
-        meas_file_path = self._sim.run_script(self._script_path)
+        #meas_file_path = self._sim.run_script(self._script_path)
+        measures = self._sim.run_model(self._model, individual.netlist)
         return MeasureParser(meas_file_path).parse()
 
 

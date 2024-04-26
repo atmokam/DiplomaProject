@@ -7,59 +7,46 @@ from CsvParser import CsvParser
 from Model import Model
 from Trainer import Trainer
 
+from DataScaler import DataScaler
+
+
+def calculate_measure_constraints(measures): # shouldnt be here
+    meas_constr = {}
+    for meas in measures:
+        for key, val in meas.items():
+            if key not in meas_constr:
+                meas_constr[key] = [val, val]
+            else:
+                if val < meas_constr[key][0]:
+                    meas_constr[key][0] = val
+                if val > meas_constr[key][1]:
+                    meas_constr[key][1] = val
+
+    print(meas_constr)
+    return meas_constr
+
+
 if __name__ == "__main__":
-    # wr = CsvWriter("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/sim/out.csv")
 
-    # ntl = [{
-    #     'xm1': {'w': 0.2, 'l': 0.3, 'nf': 1},
-    #     'xm2': {'w': 0.3, 'l': 0.4, 'nf': 2},
-    #     'xm3': {'w': 0.4, 'l': 0.5, 'nf': 3}
-    # }, 
-    # {
-    #     'xm1': {'w': 0.2, 'l': 0.3, 'nf': 1},
-    #     'xm2': {'w': 0.3, 'l': 0.4, 'nf': 2},
-    #     'xm3': {'w': 0.4, 'l': 0.5, 'nf': 3}
-    # }, 
-    # {
-    #     'xm1': {'w': 0.2, 'l': 0.3, 'nf': 1},
-    #     'xm2': {'w': 0.3, 'l': 0.4, 'nf': 2},
-    #     'xm3': {'w': 0.4, 'l': 0.5, 'nf': 3}
-    # }]
-    # fit = [1, 2, 3]
-
-    # meas = [
-    #     {'vds': 1, 'vgs': 2, 'id': 3},
-    #     {'vds': 4, 'vgs': 5, 'id': 6},
-    #     {'vds': 7, 'vgs': 8, 'id': 9}
-    # ]
-
-    # wr.write(ntl, fit, meas)
-
-    # parser = CsvParser("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/sim/output copy.csv")
-
-    # ntl, fit, meas = parser.parse()
-
-    # print(ntl, fit, meas)
-
+    _ntl, _, _measures = CsvParser("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/sim/output (3).csv").parse()
     
+    ntl_constraints = {
+        'w': (0.2, 0.5),
+        'l': (0.3, 1.05),
+        'nf': (1, 4)
+    }
 
-    # from PyQt5.QtWidgets import QApplication
-    # import sys
+    meas_constr = calculate_measure_constraints(_measures)
 
-    # app = QApplication(sys.argv)
+    scaler = DataScaler(ntl_constraints, meas_constr)
+    for data, meas in zip(_ntl, _measures):
+        scaler.scale(data, meas)
 
-    # application = Application()
 
-    # mainWindow = MainWindow(application)
-    # mainWindow.show()
-
-    # sys.exit(app.exec_())
-
+    trainer = Trainer(_ntl, _measures)
     
-
-
-    trainer = Trainer("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/sim/output copy.csv")
-    trainer.train(20, 10)
+    trainer.train(400, 10)
+    trainer.save("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/sim/model.keras")
     model = trainer.get_trained_model()
 
     
@@ -74,3 +61,4 @@ if __name__ == "__main__":
         'xm21': {'w':0.3, 'l': 0.4, 'nf': 2},
         'xm31': {'w': 0.4, 'l': 0.5, 'nf': 3}
     }))
+
