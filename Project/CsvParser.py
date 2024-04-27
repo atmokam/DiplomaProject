@@ -1,5 +1,7 @@
 import csv 
 
+# all parse classes should have a common ancestor
+
 class CsvParser:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -37,3 +39,4 @@ class CsvParser:
                 self.measures_data.append(measures.copy())
                 
         return self.ntl_list, self.fitnesses, self.measures_data
+    

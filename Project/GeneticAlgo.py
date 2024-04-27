@@ -12,7 +12,7 @@ from Model import Model
 
 class GeneticAlgo:
 
-    def __init__(self, path_to_sim_folder, scales, netlist, spec, parameter_constraints):
+    def __init__(self, simulator, scales, netlist, spec, parameter_constraints):
         self._scales = scales
         self._parameter_constraints = parameter_constraints
         self._netlist = NetlistParser(netlist, parameter_constraints.keys()).parse()
@@ -21,14 +21,13 @@ class GeneticAlgo:
         self._spec_path = spec
         self._spec = SpecParser(spec).parse()
 
-        self._path_to_sim_folder = path_to_sim_folder
-        self._sim = Simulator(self._path_to_sim_folder)
+        self._sim = simulator
 
-        self._model = Model() # I have two_stage_opamp model for now
+        # self._path_to_sim_folder = path_to_sim_folder
 
-        self._csv_file = os.path.join(self._path_to_sim_folder, 'output.csv')
-        self._script_path = os.path.join(self._path_to_sim_folder, 'run_sim.sh')
-        self._deck_file = os.path.join(self._path_to_sim_folder, 'deck_file.sp')
+        # self._csv_file = os.path.join(self._path_to_sim_folder, 'output.csv')
+        # self._script_path = os.path.join(self._path_to_sim_folder, 'run_sim.sh')
+        # self._deck_file = os.path.join(self._path_to_sim_folder, 'deck_file.sp')
 
 
 
@@ -143,20 +142,19 @@ class GeneticAlgo:
         best_fitness, best_individual = self._initialize_individuals(population)
 
         for _ in range(generations):
-            for _ in range(population_size):
-                parent1, parent2 = self._select_parents(population, population_size)
-                child = self._crossover(parent1.copy(), parent2.copy())
-                child = self._mutate(child, mutation_rate)
+            parent1, parent2 = self._select_parents(population, population_size)
+            child = self._crossover(parent1.copy(), parent2.copy())
+            child = self._mutate(child, mutation_rate)
 
-                best_fitness, best_individual = self._initialize_individuals(child, best_fitness, best_individual)
-                population.extend(child)
-
+            best_fitness, best_individual = self._initialize_individuals(child, best_fitness, best_individual)
+            population.extend(child)
 
 
-        writer = CsvWriter(self._csv_file)
-        writer.write([ind.netlist for ind in population], 
-                     [ind.fitness for ind in population], 
-                     [ind.measures for ind in population])
+
+        # writer = CsvWriter(self._csv_file)
+        # writer.write([ind.netlist for ind in population], 
+        #              [ind.fitness for ind in population], 
+        #              [ind.measures for ind in population])
 
         print(best_fitness)
         return best_individual.netlist

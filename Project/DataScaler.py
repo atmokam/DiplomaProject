@@ -1,9 +1,9 @@
 
 
 class DataScaler:
-    def __init__(self, ntl_constraints, meas_constraints):
-        self.ntl_constraints = ntl_constraints
-        self.meas_constraints = meas_constraints
+    def __init__(self, constraints):
+        self.ntl_constraints = constraints.netlist_constraints
+        self.meas_constraints = constraints.measure_constraints
         
     def scale(self, netlist, measure: tuple):
         for val in netlist.values():

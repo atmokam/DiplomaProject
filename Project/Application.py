@@ -1,12 +1,23 @@
 import os
 import pickle
 from GeneticAlgo import GeneticAlgo
+from Simulator import Simulator
+from Constraints import Constraints
 
 
 class Application:
+    def __init__(self):
+        self._generations = 0
+        self._population = 0
+        self._constraints = Constraints()
+        self._scales = {}
+        self._netlist = ""
+        self._spec = ""
+        self._simulator = Simulator()
 
     def run_genetic_algo(self, population_size, generations):
-        gen_algo = GeneticAlgo(self._sim_folder, self._scales, self._netlist, self._spec, self._parameter_constraints)
+        gen_algo = GeneticAlgo(self._simulator, self._scales, self._netlist, 
+                               self._spec, self._constraints.netlist_constraints)
         return gen_algo.genetic_algorithm(population_size, generations, 0.6)
  
 
@@ -17,9 +28,6 @@ class Application:
             pickle.dump(result, f)
         print(result)
             
-
-
-    # getters and setters
 
     @property
     def generations(self):
@@ -39,20 +47,22 @@ class Application:
 
     @property
     def sim_folder(self):
-        return self._sim_folder
-    
+        return self._simulator.path
+
     @sim_folder.setter
     def sim_folder(self, path):
-        self._sim_folder = path
+        self._simulator.path = path
 
 
     @property
     def parameter_constraints(self):
-        return self._parameter_constraints
+        return self._constraints.netlist_constraints
     
     @parameter_constraints.setter
     def parameter_constraints(self, constraints):
-        self._parameter_constraints = constraints
+        self._constraints.netlist_constraints = constraints
+        self._simulator.constraints = Constraints()
+        self._simulator.constraints.netlist_constraints = constraints
 
     @property
     def scales(self):
@@ -69,6 +79,8 @@ class Application:
     @netlist.setter
     def netlist(self, path):
         self._netlist = path
+        name =  os.path.splitext(os.path.basename(path))[0]
+        self._simulator.path = os.path.join(os.path.dirname(path), name)
 
     @property
     def spec(self):

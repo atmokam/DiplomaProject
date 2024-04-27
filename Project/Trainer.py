@@ -16,7 +16,7 @@ class Trainer:
 
         self._model = k.models.Sequential()
 
-        self._model.add(k.layers.Dense(64, input_dim=input_count, activation='relu'))
+        self._model.add(k.layers.Dense(50, input_dim=input_count, activation='relu'))
         self._model.add(k.layers.Dense(output_count, activation='linear'))
         self._model.compile(optimizer='adam', loss='mean_squared_logarithmic_error', metrics=['accuracy'])
 
