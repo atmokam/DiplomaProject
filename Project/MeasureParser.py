@@ -4,8 +4,7 @@ import re
 class MeasureParser:
     def __init__(self, path):
         self._measure_file = self._read_file(path)
-    #let it not read
-    # i'm gonna need list to dict conversion
+
 
     def _read_file(self, path):
         with open(path, 'r') as f:

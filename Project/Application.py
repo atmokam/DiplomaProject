@@ -15,7 +15,7 @@ class Application:
         self._spec = ""
         self._simulator = Simulator()
 
-    def run_genetic_algo(self, population_size, generations):
+    def _run_genetic_algo(self, population_size, generations):
         gen_algo = GeneticAlgo(self._simulator, self._scales, self._netlist, 
                                self._spec, self._constraints.netlist_constraints)
         return gen_algo.genetic_algorithm(population_size, generations, 0.6)
@@ -23,7 +23,7 @@ class Application:
 
     def run(self):
         path = os.path.join(self._sim_folder, "result.pkl")
-        result = self.run_genetic_algo(20, 10)
+        result = self._run_genetic_algo(self.generations, self.population)
         with open(path, 'wb') as f:
             pickle.dump(result, f)
         print(result)
@@ -79,7 +79,7 @@ class Application:
     @netlist.setter
     def netlist(self, path):
         self._netlist = path
-        name =  os.path.splitext(os.path.basename(path))[0]
+        name = os.path.splitext(os.path.basename(path))[0]
         self._simulator.path = os.path.join(os.path.dirname(path), name)
 
     @property

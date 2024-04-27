@@ -39,3 +39,12 @@ class NetlistParser:
                     output[name] = params            
 
         return output
+    
+    def parse_measure_names(self):
+        output = []
+        pattern = re.compile(r"^\.meas\s+?\w+?\s+?(\w+)")
+        for line in self._file:
+            match = pattern.search(line)
+            if match:
+                output.append(match.group(1))
+        return output

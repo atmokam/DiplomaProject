@@ -15,25 +15,23 @@ class GeneticAlgo:
     def __init__(self, simulator, scales, netlist, spec, parameter_constraints):
         self._scales = scales
         self._parameter_constraints = parameter_constraints
-        self._netlist = NetlistParser(netlist, parameter_constraints.keys()).parse()
+        parser = NetlistParser(netlist, parameter_constraints.keys())
+        self._netlist = parser.parse()
         
         self._ntl_path = netlist
         self._spec_path = spec
         self._spec = SpecParser(spec).parse()
 
         self._sim = simulator
+        self._sim.measure_names = parser.parse_measure_names()
 
-        # self._path_to_sim_folder = path_to_sim_folder
-
-        # self._csv_file = os.path.join(self._path_to_sim_folder, 'output.csv')
-        # self._script_path = os.path.join(self._path_to_sim_folder, 'run_sim.sh')
-        # self._deck_file = os.path.join(self._path_to_sim_folder, 'deck_file.sp')
+       
 
 
-
-    def _write_netlist(self, individual, out):
+    def _write_netlist(self, individual, out): 
         ntl_mod = NetlistModifier(self._ntl_path)
         ntl_mod.modify_transistor_params(individual.netlist, out, self._parameter_constraints)
+    # shouldve been part of simulator, doesnt belong here
 
     def _generate_num(self, sample_num, start, until):
         if isinstance(sample_num, int):
@@ -76,7 +74,7 @@ class GeneticAlgo:
         return population
 
     def _select_parents(self, population, size):
-        if len(population) > size: # tournament select
+        if len(population) > size: #tournament selection
             sample_length = random.randint(size, len(population))
             p1 = random.sample(population, sample_length)
             p2 = random.sample(population, sample_length)
@@ -118,10 +116,9 @@ class GeneticAlgo:
         return pop
 
     def _get_measures(self, individual, out_file):
-        self._write_netlist(individual, out_file)
+        #self._write_netlist(individual, out_file)
         #meas_file_path = self._sim.run_script(self._script_path)
-        measures = self._sim.run_model(self._model, individual.netlist)
-        return MeasureParser(meas_file_path).parse()
+        return self._sim.run_model(individual.netlist)
 
 
     def _initialize_individuals(self, population, best_fitness=float('-inf'), best_individual=None):
@@ -140,6 +137,7 @@ class GeneticAlgo:
         population = self._generate_population(self._netlist.copy(), population_size)
 
         best_fitness, best_individual = self._initialize_individuals(population)
+        fitness_data = [best_fitness]
 
         for _ in range(generations):
             parent1, parent2 = self._select_parents(population, population_size)
@@ -147,14 +145,9 @@ class GeneticAlgo:
             child = self._mutate(child, mutation_rate)
 
             best_fitness, best_individual = self._initialize_individuals(child, best_fitness, best_individual)
+            
+            fitness_data.append(best_fitness)
             population.extend(child)
-
-
-
-        # writer = CsvWriter(self._csv_file)
-        # writer.write([ind.netlist for ind in population], 
-        #              [ind.fitness for ind in population], 
-        #              [ind.measures for ind in population])
 
         print(best_fitness)
         return best_individual.netlist

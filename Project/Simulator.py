@@ -8,9 +8,11 @@ from Constraints import Constraints
 
 class Simulator:
     def __init__(self, path = None):
+        self.model = Model()
         self.path = path #path to model
         self.constraints = None
-        self.model = Model()
+        self.scaler = DataScaler()
+        self.measure_names = []
 
     @property
     def path(self):
@@ -32,6 +34,21 @@ class Simulator:
 
     #     return original_file_path
     
-    def run_model(self, model, ntl):
-        return model.predict(ntl)
+    def run_model(self, ntl):
+        for data in ntl:
+            self.scaler.scale_ntl(data)
+
+        result = self.model.predict(ntl)
+        
+        measures = {}
+        for name, meas in zip(self.measure_names, result[0]):
+            measures[name] = meas
+
+        self.scaler.unscale_meas(measures)
+
+        return measures
+
+        
+
+
     
