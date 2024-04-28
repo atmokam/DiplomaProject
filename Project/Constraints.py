@@ -4,7 +4,7 @@ class Constraints:
         self.measure_constraints = {}
 
     
-    def calculate_measure_constraints(self, measures):
+    def calculate_measure_constraints(self, measures: list[dict]): 
         meas_constr = {}
         for meas in measures:
             for key, val in meas.items():
@@ -15,5 +15,7 @@ class Constraints:
                         meas_constr[key][0] = val
                     if val > meas_constr[key][1]:
                         meas_constr[key][1] = val
-
         return meas_constr
+    
+    def set_measure_constraints(self, measures):
+        self.measure_constraints = self.calculate_measure_constraints(measures)

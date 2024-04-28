@@ -47,4 +47,5 @@ class NetlistParser:
             match = pattern.search(line)
             if match:
                 output.append(match.group(1))
+
         return output

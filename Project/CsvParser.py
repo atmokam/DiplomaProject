@@ -13,6 +13,7 @@ class CsvParser:
         with open(self.file_path, mode='r') as file:
             csv_reader = csv.reader(file)
             headers = next(csv_reader)
+            
             fitness_index = headers.index('fitness') #is in the middle of xm and meas
 
             for row in csv_reader:
@@ -30,11 +31,13 @@ class CsvParser:
                 self.fitnesses.append(float(fitness))
 
                 measures = {}
-                
-                for i in range((3*fitness_index), len(row)):
-                    measures[headers[(i//3)+1]] = float(row[i-1])
+                header_start = fitness_index
+                row_start = 3*header_start
+                for i in range(header_start+1, len(headers)):
+                    atkey = headers[i]
+                    row_start = row_start + 1
+                    measures[atkey] = float(row[row_start])
 
-                measures[headers[-1]] = float(row[-1])
 
                 self.measures_data.append(measures.copy())
                 

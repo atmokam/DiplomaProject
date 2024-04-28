@@ -11,8 +11,6 @@ class Application:
         self._population = 0
         self._constraints = Constraints()
         self._scales = {}
-        self._netlist = ""
-        self._spec = ""
         self._simulator = Simulator()
 
     def _run_genetic_algo(self, population_size, generations):
@@ -22,7 +20,7 @@ class Application:
  
 
     def run(self):
-        path = os.path.join(self._sim_folder, "result.pkl")
+        path = os.path.join(self.sim_folder, "result.pkl")
         result = self._run_genetic_algo(self.generations, self.population)
         with open(path, 'wb') as f:
             pickle.dump(result, f)
@@ -47,22 +45,18 @@ class Application:
 
     @property
     def sim_folder(self):
-        return self._simulator.path
-
-    @sim_folder.setter
-    def sim_folder(self, path):
-        self._simulator.path = path
+        return os.path.dirname(self._simulator.path)
 
 
     @property
-    def parameter_constraints(self):
-        return self._constraints.netlist_constraints
+    def constraints(self):
+        return self._constraints
     
-    @parameter_constraints.setter
-    def parameter_constraints(self, constraints):
-        self._constraints.netlist_constraints = constraints
-        self._simulator.constraints = Constraints()
-        self._simulator.constraints.netlist_constraints = constraints
+    @constraints.setter
+    def constraints(self, constraints):
+        self._constraints = constraints
+        self._simulator.constraints = constraints
+
 
     @property
     def scales(self):
@@ -79,7 +73,7 @@ class Application:
     @netlist.setter
     def netlist(self, path):
         self._netlist = path
-        name = os.path.splitext(os.path.basename(path))[0]
+        name = os.path.splitext(os.path.basename(path))[0] + '.keras'
         self._simulator.path = os.path.join(os.path.dirname(path), name)
 
     @property

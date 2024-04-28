@@ -1,17 +1,25 @@
 from MainWindow import MainWindow
 from Application import Application
+from CsvParser import CsvParser
+from Constraints import Constraints
 
 
 if __name__ == "__main__":
 
-    application = Application()
-    application.generations = 400
-    application.population = 5
-    application.parameter_constraints = {
+    _ntl, _, _measures = CsvParser("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/Project/files/output (3).csv").parse()
+
+    constraints = Constraints()
+    constraints.netlist_constraints = {
         'w': (0.2, 0.5),
         'l': (0.3, 1.05),
         'nf': (1, 4)
     }
+    constraints.measure_constraints = constraints.calculate_measure_constraints(_measures)
+
+    application = Application()
+    application.generations = 40
+    application.population = 5
+    application.constraints = constraints
     application.spec = "/home/atmokam/Desktop/DiplomaProject/DiplomaProject/spec.txt"
     application.netlist = "/home/atmokam/Desktop/DiplomaProject/DiplomaProject/two_stage_opamp.sp"
     application.scales = {"pic": 10**-12, "pico": 10**-12, "nan": 10**-9, "nano": 10**-9, "0": 1, "kil": 10**3 , "kilo": 10**3, "meg": 10**6, "mega":  10**6}
@@ -37,16 +45,7 @@ if __name__ == "__main__":
 
 
 
-#  _ntl, _, _measures = CsvParser("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/Project/files/output (3).csv").parse()
 
-
-#     constraints = Constraints()
-#     constraints.netlist_constraints = {
-#         'w': (0.2, 0.5),
-#         'l': (0.3, 1.05),
-#         'nf': (1, 4)
-#     }
-#     constraints.measure_constraints = constraints.calculate_measure_constraints(_measures)
 
 
 #     scaler = DataScaler(constraints)

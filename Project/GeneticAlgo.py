@@ -108,14 +108,14 @@ class GeneticAlgo:
         for individual in pop:
             rand = random.random()
             if rand < rate:
-                key = random.sample(individual.netlist.keys(), 1)
-                param = random.sample(individual.netlist[key[0]].keys(), 1)[0]
-                individual.netlist[key] = {param: self._generate_num(individual.netlist[key][param],
-                                                                        self._parameter_constraints[param][0], self._parameter_constraints[param][1])}
+                key = random.sample(individual.netlist.keys(), 1)[0]
+                param = random.sample(individual.netlist[key].keys(), 1)[0]
+                individual.netlist[key][param] = self._generate_num(individual.netlist[key][param],
+                                                                        self._parameter_constraints[param][0], self._parameter_constraints[param][1])
 
         return pop
 
-    def _get_measures(self, individual, out_file):
+    def _get_measures(self, individual) -> dict:
         #self._write_netlist(individual, out_file)
         #meas_file_path = self._sim.run_script(self._script_path)
         return self._sim.run_model(individual.netlist)
@@ -123,7 +123,7 @@ class GeneticAlgo:
 
     def _initialize_individuals(self, population, best_fitness=float('-inf'), best_individual=None):
         for individual in population:
-            individual.measures = self._get_measures(individual, self._deck_file)
+            individual.measures = self._get_measures(individual)
             individual.fitness = self._calculate_fintess(individual.measures)
 
             if individual.fitness > best_fitness:

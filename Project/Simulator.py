@@ -3,14 +3,11 @@
 #import glob
 from Model import Model
 from DataScaler import DataScaler
-from Constraints import Constraints
 
 
 class Simulator:
     def __init__(self, path = None):
-        self.model = Model()
-        self.path = path #path to model
-        self.constraints = None
+        self.model = Model() 
         self.scaler = DataScaler()
         self.measure_names = []
 
@@ -22,6 +19,16 @@ class Simulator:
     def path(self, path):
         self._path = path
         self.model.load(path)
+
+    @property
+    def constraints(self):
+        return self._constraints
+
+    @constraints.setter
+    def constraints(self, constraints):
+        self._constraints = constraints
+        self.scaler.ntl_constraints = constraints.netlist_constraints
+        self.scaler.meas_constraints = constraints.measure_constraints
         
 
     # def run_script(self, script_path):
@@ -35,8 +42,7 @@ class Simulator:
     #     return original_file_path
     
     def run_model(self, ntl):
-        for data in ntl:
-            self.scaler.scale_ntl(data)
+        self.scaler.scale_ntl(ntl)
 
         result = self.model.predict(ntl)
         
