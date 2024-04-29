@@ -1,4 +1,4 @@
-from Constraints import Constraints
+from MainAlgorithm.Constraints import Constraints
 
 class DataScaler:
     def __init__(self, constraints: Constraints = None):

@@ -1,12 +1,12 @@
 #import subprocess
 #import os
 #import glob
-from Model import Model
-from DataScaler import DataScaler
+from ANN.Model import Model
+from DataProcessing.DataScaler import DataScaler
 
 
 class Simulator:
-    def __init__(self, path = None):
+    def __init__(self):
         self.model = Model() 
         self.scaler = DataScaler()
         self.measure_names = []

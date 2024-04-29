@@ -1,5 +1,5 @@
 import random, copy
-from Individual import Individual
+from MainAlgorithm.Individual import Individual
 
 
 
@@ -47,7 +47,7 @@ class GeneticAlgorithm:
                                                           self._parameter_constraints[param][0], self._parameter_constraints[param][1]) 
                                                           for param in self._parameter_constraints.keys()}
 
-            population.append(Individual(new_net.copy()))
+            population.append(Individual(copy.deepcopy(new_net)))
 
         return population
 
@@ -109,8 +109,7 @@ class GeneticAlgorithm:
 
 
     def genetic_algorithm(self, population_size, generations, mutation_rate):
-        population = self._generate_population(self._netlist.copy(), population_size)
-            
+        population = self._generate_population(copy.deepcopy(self._netlist), population_size)
         best_fitness, best_individual = self._initialize_individuals(population)
         fitness_data = [best_fitness]
 
@@ -125,4 +124,4 @@ class GeneticAlgorithm:
             population.extend(child)
 
         print(best_fitness)
-        return best_individual.netlist
+        return best_individual.netlist, fitness_data

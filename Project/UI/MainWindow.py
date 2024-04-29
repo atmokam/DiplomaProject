@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QLineEdit
-from ResultWindow import ResultWindow
-from ConstraintsParser import ConstraintsParser
+from UI.ResultWindow import ResultWindow
+from DataProcessing.ConstraintsParser import ConstraintsParser
 
 
 class MainWindow(QMainWindow):
@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         self.param_constraints = QLineEdit()
         self.param_constraints.setPlaceholderText("Parameter constraints")
         parser = ConstraintsParser()
-        self.param_constraints.editingFinished.connect(lambda: setattr(self.application_ref, 'parameter_constraints', parser.parse(self.param_constraints.text())))
+        self.param_constraints.editingFinished.connect(lambda: setattr(self.application_ref, 'constraints', parser.parse(self.param_constraints.text())))
 
         self.buttonRun = QPushButton("Generate")
         self.buttonRun.clicked.connect(self.runFunction)
@@ -63,19 +63,8 @@ class MainWindow(QMainWindow):
 
 
     def runFunction(self): # sample for now
-        result = """Best individual:
-
-xm13 net23 net23 vdd vdd p25 w=0.3u l=0.44u nf=5 m=1
-xm16 out   net22 vdd vdd p25 w=0.3u l=0.44u nf=5 m=1
-xm15 net41 net41 vdd vdd p25 w=0.32u l=0.42u nf=1 m=1
-xm14 net22 net23 vdd vdd p25 w=0.32u l=0.42u nf=3 m=1
-xm12 net41 net41 vss vss n25 w=0.32u l=0.55u nf=1 m=1
-xm10 net15 net41 vss vss n25 w=0.67u l=0.42u nf=1 m=1
-xm9  net22 inp net15 vss n25 w=0.32u l=0.42u nf=1 m=1
-xm17 net23 inm net15 vss n25 w=0.32u l=0.42u nf=1 m=1
-xm11 out   net41 vss vss n25 w=0.86u l=1.03u nf=1 m=1
-"""
-        data = [-1.5 , -1.3, -1.2, 0.5, 1.3, 2.2, 3.5, 4] 
-        self.result_window = ResultWindow(result, data)
+        result, fitnesses = self.application_ref.run()
+        
+        self.result_window = ResultWindow(result, fitnesses)
         self.result_window.show()
 

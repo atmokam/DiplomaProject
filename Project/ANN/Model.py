@@ -8,6 +8,7 @@ class Model:
     def predict(self, ntl):
         ntl = Model.ntl_to_list(ntl)
         ntl = np.asarray(ntl).astype(np.float32)
+        print(ntl)
         return self._model.predict(ntl)
     
     def load(self, path):

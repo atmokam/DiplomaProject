@@ -1,6 +1,6 @@
 import csv 
 
-# all parse classes should have a common ancestor
+# all parse classes should have a common ancestor, although they don't for now
 
 class CsvParser:
     def __init__(self, file_path):

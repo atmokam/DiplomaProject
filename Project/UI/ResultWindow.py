@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QHBoxLayout, QWidget
-from MatPlotLibWidget import MPLWidget
+from UI.MatPlotLibWidget import MPLWidget
 
 
 class ResultWindow(QMainWindow):
@@ -8,7 +8,7 @@ class ResultWindow(QMainWindow):
         self.setWindowTitle("Result Window")
 
         self.textEdit = QTextEdit()
-        self.textEdit.setText(result)
+        self.textEdit.setText(str(result))
         self.textEdit.setFixedSize(500, 500)
 
         self.graph = MPLWidget()

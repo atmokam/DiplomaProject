@@ -1,7 +1,7 @@
-from MainWindow import MainWindow
-from Application import Application
-from CsvParser import CsvParser
-from Constraints import Constraints
+from UI.MainWindow import MainWindow
+from Application.Application import Application
+from DataProcessing.CsvParser import CsvParser
+from MainAlgorithm.Constraints import Constraints
 
 
 

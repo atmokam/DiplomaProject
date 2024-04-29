@@ -1,6 +1,6 @@
 import keras as k
 import numpy as np
-from Model import Model
+from ANN.Model import Model
 
 class Trainer:
     def __init__(self, netlist, measures):
