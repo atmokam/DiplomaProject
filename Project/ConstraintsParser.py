@@ -1,6 +1,6 @@
 import re
 
-class ConstaintsParser:
+class ConstraintsParser:
     def parse(self, constraints : str):
         pattern = "(\w+?)\s*?:\s*?(\d+?)\s*?(\d+?)"
         regex = re.compile(pattern)

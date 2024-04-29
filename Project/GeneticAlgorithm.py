@@ -1,37 +1,17 @@
-import random, os
-from CsvWriter import CsvWriter
-from typing import List
+import random, copy
 from Individual import Individual
-from NetlistModifier import NetlistModifier
-from MeasureParser import MeasureParser
-from NetlistParser import NetlistParser
-from SpecParser import SpecParser
-from Simulator import Simulator
-from Model import Model
 
 
-class GeneticAlgo:
+
+class GeneticAlgorithm:
 
     def __init__(self, simulator, scales, netlist, spec, parameter_constraints):
         self._scales = scales
         self._parameter_constraints = parameter_constraints
-        parser = NetlistParser(netlist, parameter_constraints.keys())
-        self._netlist = parser.parse()
-        
-        self._ntl_path = netlist
-        self._spec_path = spec
-        self._spec = SpecParser(spec).parse()
-
+        self._netlist = netlist
+        self._spec = spec
         self._sim = simulator
-        self._sim.measure_names = parser.parse_measure_names()
 
-       
-
-
-    def _write_netlist(self, individual, out): 
-        ntl_mod = NetlistModifier(self._ntl_path)
-        ntl_mod.modify_transistor_params(individual.netlist, out, self._parameter_constraints)
-    # shouldve been part of simulator, doesnt belong here
 
     def _generate_num(self, sample_num, start, until):
         if isinstance(sample_num, int):
@@ -47,9 +27,7 @@ class GeneticAlgo:
             if low and high:
                 spec_key = self._spec.get(key, {}).get('Scale')
                 scale = self._scales.get(spec_key)
-                
                 fitness += self._fitness_function(meas_val, low * scale, high * scale)
-
         return fitness
 
 
@@ -58,9 +36,9 @@ class GeneticAlgo:
             return 1
         else:
             mid = (lower_bound + upper_bound) / 2
-            return -abs(measured_val - mid) / mid
+            return -abs((measured_val - mid) / mid)
 
-    def _generate_population(self, netlist, population_size) -> List[Individual]:
+    def _generate_population(self, netlist, population_size) -> list[Individual]:
         population = []
         for _ in range(population_size):
             new_net = netlist.copy()
@@ -94,7 +72,7 @@ class GeneticAlgo:
     def _crossover(self, parent_pop1, parent_pop2):
         result = []
         for par1, par2 in zip(parent_pop1, parent_pop2):
-            net1, net2 = par1.netlist.copy(), par2.netlist.copy()
+            net1, net2 = copy.deepcopy(par1.netlist), copy.deepcopy(par2.netlist)
             size = random.randint(1, len(net1) - 1)
             rand_pop = random.sample(list(net1.keys()), size)
             for key in rand_pop:
@@ -115,27 +93,24 @@ class GeneticAlgo:
 
         return pop
 
-    def _get_measures(self, individual) -> dict:
-        #self._write_netlist(individual, out_file)
-        #meas_file_path = self._sim.run_script(self._script_path)
-        return self._sim.run_model(individual.netlist)
+    def _get_measures(self, netl) -> dict:
+        return self._sim.run_model(netl)
 
 
     def _initialize_individuals(self, population, best_fitness=float('-inf'), best_individual=None):
         for individual in population:
-            individual.measures = self._get_measures(individual)
+            individual.measures = self._get_measures(copy.deepcopy(individual.netlist))
             individual.fitness = self._calculate_fintess(individual.measures)
 
             if individual.fitness > best_fitness:
                 best_fitness = individual.fitness
                 best_individual = individual
-
         return best_fitness, best_individual
 
 
     def genetic_algorithm(self, population_size, generations, mutation_rate):
         population = self._generate_population(self._netlist.copy(), population_size)
-
+            
         best_fitness, best_individual = self._initialize_individuals(population)
         fitness_data = [best_fitness]
 

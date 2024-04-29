@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QLineEdit
 from ResultWindow import ResultWindow
-from ConstaintsParser import ConstaintsParser
+from ConstraintsParser import ConstraintsParser
 
 
 class MainWindow(QMainWindow):
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
 
         self.param_constraints = QLineEdit()
         self.param_constraints.setPlaceholderText("Parameter constraints")
-        parser = ConstaintsParser()
+        parser = ConstraintsParser()
         self.param_constraints.editingFinished.connect(lambda: setattr(self.application_ref, 'parameter_constraints', parser.parse(self.param_constraints.text())))
 
         self.buttonRun = QPushButton("Generate")

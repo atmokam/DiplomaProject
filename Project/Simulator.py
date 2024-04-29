@@ -26,20 +26,9 @@ class Simulator:
 
     @constraints.setter
     def constraints(self, constraints):
-        self._constraints = constraints
         self.scaler.ntl_constraints = constraints.netlist_constraints
         self.scaler.meas_constraints = constraints.measure_constraints
         
-
-    # def run_script(self, script_path):
-    #     subprocess.check_call(['bash', script_path])
-
-    #     files = glob.glob(os.path.join(self.path, "*.m*"))
-    #     if not files:
-    #         raise Exception("no file found with .m*")
-    #     original_file_path = files[0] 
-
-    #     return original_file_path
     
     def run_model(self, ntl):
         self.scaler.scale_ntl(ntl)
@@ -56,5 +45,20 @@ class Simulator:
 
         
 
+    # def run_script(self, script_path):
+    #     subprocess.check_call(['bash', script_path])
+
+    #     files = glob.glob(os.path.join(self.path, "*.m*"))
+    #     if not files:
+    #         raise Exception("no file found with .m*")
+    #     original_file_path = files[0] 
+
+    #     return original_file_path
+
 
     
+
+
+    # def _write_netlist(self, individual, out): 
+    #     ntl_mod = NetlistModifier(self._ntl_path)
+    #     ntl_mod.modify_transistor_params(individual.netlist, out, self._parameter_constraints)

@@ -1,8 +1,10 @@
 import os
 import pickle
-from GeneticAlgo import GeneticAlgo
+from GeneticAlgorithm import GeneticAlgorithm
 from Simulator import Simulator
 from Constraints import Constraints
+from NetlistParser import NetlistParser
+from SpecParser import SpecParser
 
 
 class Application:
@@ -13,15 +15,23 @@ class Application:
         self._scales = {}
         self._simulator = Simulator()
 
-    def _run_genetic_algo(self, population_size, generations):
-        gen_algo = GeneticAlgo(self._simulator, self._scales, self._netlist, 
-                               self._spec, self._constraints.netlist_constraints)
+    def _run_genetic_algorithm(self, population_size, generations):
+
+        parameter_constraints = self._constraints.netlist_constraints
+        parser = NetlistParser(self._netlist, parameter_constraints.keys())
+        netlist = parser.parse()
+        specs = SpecParser(self._spec).parse()
+        self._simulator.measure_names = parser.parse_measure_names()
+
+        gen_algo = GeneticAlgorithm(self._simulator, self._scales, netlist, 
+                               specs, parameter_constraints)
+        
         return gen_algo.genetic_algorithm(population_size, generations, 0.6)
  
 
     def run(self):
         path = os.path.join(self.sim_folder, "result.pkl")
-        result = self._run_genetic_algo(self.generations, self.population)
+        result = self._run_genetic_algorithm(self.generations, self.population)
         with open(path, 'wb') as f:
             pickle.dump(result, f)
         print(result)
