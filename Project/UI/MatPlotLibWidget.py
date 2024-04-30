@@ -17,5 +17,7 @@ class MPLWidget(QWidget):
 
     def plot(self, data):
         ax = self.figure.add_subplot(111)
+        ax.set_xlabel("Iteration")
+        ax.set_ylabel("Fitness value")
         ax.plot(data)
         self.canvas.draw()
