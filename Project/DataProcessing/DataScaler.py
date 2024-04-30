@@ -30,5 +30,4 @@ class DataScaler:
                 measure[key] = constraint[0]
             else:
                 measure[key] = val * (constraint[1] - constraint[0]) + constraint[0]
-            # doesnt turn to a number
         

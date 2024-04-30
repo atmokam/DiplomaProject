@@ -110,6 +110,7 @@ class GeneticAlgorithm:
 
     def genetic_algorithm(self, population_size, generations, mutation_rate):
         population = self._generate_population(copy.deepcopy(self._netlist), population_size)
+    
         best_fitness, best_individual = self._initialize_individuals(population)
         fitness_data = [best_fitness]
 
@@ -119,8 +120,8 @@ class GeneticAlgorithm:
             child = self._mutate(child, mutation_rate)
 
             best_fitness, best_individual = self._initialize_individuals(child, best_fitness, best_individual)
-            
             fitness_data.append(best_fitness)
+            print(best_fitness)
             population.extend(child)
 
         print(best_fitness)

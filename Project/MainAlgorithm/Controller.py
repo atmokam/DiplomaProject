@@ -7,9 +7,9 @@ class Controller:
         self.simulator = Simulator()
         self.simulator.path = simulator_path
         self.simulator.constraints = constraints
+        self.simulator.measure_names = meas_names
         self.netlist = netlist
         self.specs = specs
-        self.meas_names = meas_names
         self.scales = scales
         self.constraints = constraints
  

@@ -8,11 +8,11 @@ class ResultWindow(QMainWindow):
         self.setWindowTitle("Result Window")
 
         self.textEdit = QTextEdit()
-        self.textEdit.setText(str(result))
-        self.textEdit.setFixedSize(500, 500)
+        self.textEdit.setText(f"Result:\n{str(result)}")
+        self.textEdit.setFixedSize(470, 480)
 
         self.graph = MPLWidget()
-        self.graph.setFixedSize(500, 500)
+        self.graph.setFixedSize(480, 480)
         self.graph.plot(data)
 
         layout = QHBoxLayout()

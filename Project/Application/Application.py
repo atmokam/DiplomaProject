@@ -4,6 +4,7 @@ from UI.MainWindow import MainWindow
 from MainAlgorithm.Constraints import Constraints
 from DataProcessing.NetlistParser import NetlistParser
 from DataProcessing.SpecParser import SpecParser
+from DataProcessing.CsvParser import CsvParser
 from MainAlgorithm.Controller import Controller
 
 
@@ -13,7 +14,8 @@ class Application(QApplication):
         self._generations = 0
         self._population = 0
         self._constraints = Constraints()
-        self._scales = {}
+        self._scales = {"pic": 10**-12, "pico": 10**-12, "nan": 10**-9, "nano": 10**-9, "0": 1,
+                         "kil": 10**3 , "kilo": 10**3, "meg": 10**6, "mega":  10**6}
         self.run_gui()
 
     def run_gui(self):
@@ -24,10 +26,11 @@ class Application(QApplication):
 
     def _process_input(self):
         parser = NetlistParser(self._netlist, self._constraints.netlist_constraints.keys())
-        netlist = parser.parse()
-        print(netlist, self._constraints.netlist_constraints)
-        
         specs = SpecParser(self._spec).parse()
+        _, _, measures = CsvParser("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/Project/files/output (3).csv").parse()
+        self._constraints.measure_constraints = self._constraints.calculate_measure_constraints(measures)
+        
+        netlist = parser.parse()
         measure_names = parser.parse_measure_names()
         name = os.path.splitext(os.path.basename(self._netlist))[0] + '.keras'
         self._simulator_path = os.path.join(os.path.dirname(self._netlist), name)
@@ -66,6 +69,14 @@ class Application(QApplication):
     def constraints(self, constraints):
         self._constraints = constraints
 
+    @property
+    def measure_constraints(self):
+        return self._constraints.measure_constraints
+    
+    @measure_constraints.setter
+    def measure_constraints(self, constraints):
+        self._constraints.measure_constraints = constraints
+
 
     @property
     def scales(self):
@@ -82,7 +93,6 @@ class Application(QApplication):
     @netlist.setter
     def netlist(self, path):
         self._netlist = path
-        print(path)
       
 
     @property
