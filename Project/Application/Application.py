@@ -27,7 +27,7 @@ class Application(QApplication):
     def _process_input(self):
         parser = NetlistParser(self._netlist, self._constraints.netlist_constraints.keys())
         specs = SpecParser(self._spec).parse()
-        _, _, measures = CsvParser("/home/atmokam/Desktop/DiplomaProject/DiplomaProject/Project/files/output (3).csv").parse()
+        _, _, measures = CsvParser(os.path.join(os.path.dirname(self._netlist),"output.csv")).parse()
         self._constraints.measure_constraints = self._constraints.calculate_measure_constraints(measures)
         
         netlist = parser.parse()

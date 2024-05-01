@@ -1,6 +1,6 @@
 import csv 
 
-# all parse classes should have a common ancestor, although they don't for now
+# all parse classes should have a common ancestor, although they don't for now (again no time)
 
 class CsvParser:
     def __init__(self, file_path):
@@ -9,7 +9,7 @@ class CsvParser:
         self.fitnesses = []
         self.measures_data = []
     
-    def parse(self):
+    def parse(self): # todo: refactor this method into 3 different methods
         with open(self.file_path, mode='r') as file:
             csv_reader = csv.reader(file)
             headers = next(csv_reader)
