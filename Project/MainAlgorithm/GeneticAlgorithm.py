@@ -44,7 +44,8 @@ class GeneticAlgorithm:
             new_net = netlist.copy()
             for key in netlist.keys():
                 new_net[key] = {param: self._generate_num(new_net[key][param], 
-                                                          self._parameter_constraints[param][0], self._parameter_constraints[param][1]) 
+                                                          self._parameter_constraints[param][0], 
+                                                          self._parameter_constraints[param][1]) 
                                                           for param in self._parameter_constraints.keys()}
 
             population.append(Individual(copy.deepcopy(new_net)))
@@ -89,9 +90,10 @@ class GeneticAlgorithm:
                 key = random.sample(individual.netlist.keys(), 1)[0]
                 param = random.sample(individual.netlist[key].keys(), 1)[0]
                 individual.netlist[key][param] = self._generate_num(individual.netlist[key][param],
-                                                                        self._parameter_constraints[param][0], self._parameter_constraints[param][1])
-
+                                                                    self._parameter_constraints[param][0],
+                                                                    self._parameter_constraints[param][1])
         return pop
+
 
     def _get_measures(self, netl) -> dict:
         return self._sim.run_model(netl)
@@ -121,8 +123,7 @@ class GeneticAlgorithm:
 
             best_fitness, best_individual = self._initialize_individuals(child, best_fitness, best_individual)
             fitness_data.append(best_fitness)
-            print(best_fitness)
             population.extend(child)
 
-        print(best_fitness)
+        print(fitness_data)
         return best_individual.netlist, fitness_data

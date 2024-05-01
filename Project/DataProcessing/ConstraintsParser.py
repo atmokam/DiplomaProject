@@ -11,5 +11,4 @@ class ConstraintsParser:
 
         result = Constraints()
         result.netlist_constraints = param_constraints
-        print(result.netlist_constraints)
         return result

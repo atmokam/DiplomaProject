@@ -12,7 +12,7 @@ class ResultWindow(QMainWindow):
         self.textEdit.setFixedSize(470, 480)
 
         self.graph = MPLWidget()
-        self.graph.setFixedSize(480, 480)
+        self.graph.setFixedSize(510, 500)
         self.graph.plot(data)
 
         layout = QHBoxLayout()
